@@ -25,7 +25,7 @@ namespace CompanyNetCore.Repositories
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(CompanyNetCore.Properties.Resources.sqlConnectionString))
+                using (SqlConnection conn = new SqlConnection(Properties.Resources.sqlConnectionString))
                 {
 
                     conn.Open();
@@ -35,7 +35,7 @@ namespace CompanyNetCore.Repositories
             }
             catch (Exception)
             {
-                throw new Helper.RepoException<Helper.UpdateResultType>(Helper.UpdateResultType.SQLERROR);
+                throw new Helper.RepoException<Helper.ResultType>(Helper.ResultType.SQLERROR);
             }
         }
         public Employee Read(int Id)
@@ -53,23 +53,23 @@ namespace CompanyNetCore.Repositories
             }
             catch (Exception)
             {
-                throw new Helper.RepoException<Helper.UpdateResultType>(Helper.UpdateResultType.SQLERROR);
+                throw new Helper.RepoException<Helper.ResultType>(Helper.ResultType.SQLERROR);
             }
         }
         public Employee Create(Employee employee)
         {
             if (employee.Id != 0)
             {
-                throw new Helper.RepoException<Helper.UpdateResultType>(Helper.UpdateResultType.INVALIDEARGUMENT);
+                throw new Helper.RepoException<Helper.ResultType>(Helper.ResultType.INVALIDEARGUMENT);
             }
             var retval = InsertOrUpdate(employee);
             return retval;
         }
         public Employee Update(Employee employee)
         {
-            if (employee.Id == 0)
+            if (employee.Id == 0 || Read(employee.Id) == null)
             {
-                throw new Helper.RepoException<Helper.UpdateResultType>(Helper.UpdateResultType.INVALIDEARGUMENT);
+                throw new Helper.RepoException<Helper.ResultType>(Helper.ResultType.INVALIDEARGUMENT);
             }
             var retval = InsertOrUpdate(employee);
             return retval;
@@ -104,16 +104,12 @@ namespace CompanyNetCore.Repositories
                     }
                     param.Add("@gender", gender);
                     var result = conn.QueryFirstOrDefault<Employee>("spInsertOrUpdateEmployee", param, null, null, CommandType.StoredProcedure);
-                    if (result == null)
-                    {
-                        throw new Helper.RepoException<Helper.UpdateResultType>(Helper.UpdateResultType.INVALIDEARGUMENT);
-                    }
                     return result;
                 }
             }
             catch (Exception)
             {
-                throw new Helper.RepoException<Helper.UpdateResultType>(Helper.UpdateResultType.SQLERROR);
+                throw new Helper.RepoException<Helper.ResultType>(Helper.ResultType.SQLERROR);
             }
         }
         public Employee Delete(int Id)
@@ -125,16 +121,12 @@ namespace CompanyNetCore.Repositories
                     var param = new DynamicParameters();
                     param.Add("@Id", Id);
                     var result = conn.QueryFirstOrDefault<Employee>("spDeleteEmployee", param, null, null, CommandType.StoredProcedure);
-                    if (result == null)
-                    {
-                        throw new Helper.RepoException<Helper.UpdateResultType>(Helper.UpdateResultType.INVALIDEARGUMENT);
-                    }
                     return result;
                 }
             }
             catch (Exception)
             {
-                throw new Helper.RepoException<Helper.UpdateResultType>(Helper.UpdateResultType.SQLERROR);
+                throw new Helper.RepoException<Helper.ResultType>(Helper.ResultType.SQLERROR);
             }
         }
     }

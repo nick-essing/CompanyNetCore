@@ -26,20 +26,20 @@ namespace CompanyNetCore.Controller
             try
             {
                 result = EmployeeRepo.GetInstance().Read();
-                if (result == null)
-                {
-                    return StatusCode(StatusCodes.Status204NoContent);
-                }
             }
-            catch (Helper.RepoException<Helper.UpdateResultType> ex)
+            catch (Helper.RepoException<Helper.ResultType> ex)
             {
                 switch (ex.Type)
                 {
-                    case Helper.UpdateResultType.SQLERROR:
+                    case Helper.ResultType.SQLERROR:
                         return StatusCode(StatusCodes.Status409Conflict);
                     default:
                         return StatusCode(StatusCodes.Status400BadRequest);
                 }
+            }
+            if (result == null)
+            {
+                return StatusCode(StatusCodes.Status204NoContent);
             }
             return StatusCode(StatusCodes.Status200OK, result);
         }
@@ -50,22 +50,21 @@ namespace CompanyNetCore.Controller
             try
             {
                 result = EmployeeRepo.GetInstance().Read(Id);
-                if (result == null)
-                {
-                    return StatusCode(StatusCodes.Status204NoContent);
-                }
             }
-            catch (Helper.RepoException<Helper.UpdateResultType> ex)
+            catch (Helper.RepoException<Helper.ResultType> ex)
             {
                 switch (ex.Type)
                 {
-                    case Helper.UpdateResultType.SQLERROR:
+                    case Helper.ResultType.SQLERROR:
                         return StatusCode(StatusCodes.Status409Conflict);
                     default:
                         return StatusCode(StatusCodes.Status400BadRequest);
                 }
             }
+            if (result == null)
+                return StatusCode(StatusCodes.Status204NoContent);
             return StatusCode(StatusCodes.Status200OK, result);
+
         }
         [HttpPost]
         public IActionResult Create([FromBody] Employee employee)
@@ -75,13 +74,13 @@ namespace CompanyNetCore.Controller
             {
                 result = EmployeeRepo.GetInstance().Create(employee);
             }
-            catch (Helper.RepoException<Helper.UpdateResultType> ex)
+            catch (Helper.RepoException<Helper.ResultType> ex)
             {
                 switch (ex.Type)
                 {
-                    case Helper.UpdateResultType.SQLERROR:
+                    case Helper.ResultType.SQLERROR:
                         return StatusCode(StatusCodes.Status409Conflict);
-                    case Helper.UpdateResultType.INVALIDEARGUMENT:
+                    case Helper.ResultType.INVALIDEARGUMENT:
                         return StatusCode(StatusCodes.Status406NotAcceptable);
                     default:
                         return StatusCode(StatusCodes.Status400BadRequest);
@@ -97,13 +96,13 @@ namespace CompanyNetCore.Controller
             {
                 result = EmployeeRepo.GetInstance().Update(employee);
             }
-            catch (Helper.RepoException<Helper.UpdateResultType> ex)
+            catch (Helper.RepoException<Helper.ResultType> ex)
             {
                 switch (ex.Type)
                 {
-                    case Helper.UpdateResultType.SQLERROR:
+                    case Helper.ResultType.SQLERROR:
                         return StatusCode(StatusCodes.Status409Conflict);
-                    case Helper.UpdateResultType.INVALIDEARGUMENT:
+                    case Helper.ResultType.INVALIDEARGUMENT:
                         return StatusCode(StatusCodes.Status406NotAcceptable);
                     default:
                         return StatusCode(StatusCodes.Status400BadRequest);
@@ -119,13 +118,13 @@ namespace CompanyNetCore.Controller
             {
                 result = EmployeeRepo.GetInstance().Delete(Id);
             }
-            catch (Helper.RepoException<Helper.UpdateResultType> ex)
+            catch (Helper.RepoException<Helper.ResultType> ex)
             {
                 switch (ex.Type)
                 {
-                    case Helper.UpdateResultType.SQLERROR:
+                    case Helper.ResultType.SQLERROR:
                         return StatusCode(StatusCodes.Status409Conflict);
-                    case Helper.UpdateResultType.INVALIDEARGUMENT:
+                    case Helper.ResultType.INVALIDEARGUMENT:
                         return StatusCode(StatusCodes.Status406NotAcceptable);
                     default:
                         return StatusCode(StatusCodes.Status400BadRequest);

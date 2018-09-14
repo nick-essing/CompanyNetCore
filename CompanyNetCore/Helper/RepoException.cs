@@ -22,7 +22,7 @@ namespace CompanyNetCore.Helper
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
-    public enum UpdateResultType
+    public enum ResultType
     {
         SQLERROR,
         INVALIDEARGUMENT,
