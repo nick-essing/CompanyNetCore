@@ -40,9 +40,9 @@ namespace CompanyNetCore.Controller
             return StatusCode(StatusCodes.Status200OK, result);
         }
         [HttpPost]
-        public IActionResult spInsert([FromBody] Address address)
+        public IActionResult Insert([FromBody] Address address)
         {
-            Address result = AddressRepo.GetInstance().spInsertOrUpdate(address);
+            Address result = AddressRepo.GetInstance().Create(address);
             if (result == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest);
@@ -50,9 +50,9 @@ namespace CompanyNetCore.Controller
             return StatusCode(StatusCodes.Status200OK, result);
         }
         [HttpPut]
-        public IActionResult spUpdate([FromBody] Address address)
+        public IActionResult Update([FromBody] Address address)
         {
-            Address result = AddressRepo.GetInstance().spInsertOrUpdate(address);
+            Address result = AddressRepo.GetInstance().Update(address);
             if (result == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest);

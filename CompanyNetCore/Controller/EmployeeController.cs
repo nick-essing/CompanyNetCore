@@ -22,53 +22,116 @@ namespace CompanyNetCore.Controller
         [HttpGet]
         public IActionResult Read()
         {
-            List<Employee> result = EmployeeRepo.GetInstance().Read();
-            if (result == null)
+            List<Employee> result;
+            try
             {
-                return StatusCode(StatusCodes.Status400BadRequest);
+                result = EmployeeRepo.GetInstance().Read();
+                if (result == null)
+                {
+                    return StatusCode(StatusCodes.Status204NoContent);
+                }
+            }
+            catch (Helper.RepoException<Helper.UpdateResultType> ex)
+            {
+                switch (ex.Type)
+                {
+                    case Helper.UpdateResultType.SQLERROR:
+                        return StatusCode(StatusCodes.Status409Conflict);
+                    default:
+                        return StatusCode(StatusCodes.Status400BadRequest);
+                }
             }
             return StatusCode(StatusCodes.Status200OK, result);
         }
         [HttpGet("{Id}")]
         public IActionResult Read(int Id)
         {
-            Employee result = EmployeeRepo.GetInstance().Read(Id);
-            if (result == null)
+            Employee result;
+            try
             {
-                return StatusCode(StatusCodes.Status400BadRequest);
+                result = EmployeeRepo.GetInstance().Read(Id);
+                if (result == null)
+                {
+                    return StatusCode(StatusCodes.Status204NoContent);
+                }
+            }
+            catch (Helper.RepoException<Helper.UpdateResultType> ex)
+            {
+                switch (ex.Type)
+                {
+                    case Helper.UpdateResultType.SQLERROR:
+                        return StatusCode(StatusCodes.Status409Conflict);
+                    default:
+                        return StatusCode(StatusCodes.Status400BadRequest);
+                }
             }
             return StatusCode(StatusCodes.Status200OK, result);
         }
         [HttpPost]
-        public IActionResult spInsert([FromBody] Employee employee)
+        public IActionResult Create([FromBody] Employee employee)
         {
-            Employee result = EmployeeRepo.GetInstance().spInsertOrUpdate(employee);
-            if (result == null)
+            Employee result;
+            try
             {
-                return StatusCode(StatusCodes.Status400BadRequest);
+                result = EmployeeRepo.GetInstance().Create(employee);
+            }
+            catch (Helper.RepoException<Helper.UpdateResultType> ex)
+            {
+                switch (ex.Type)
+                {
+                    case Helper.UpdateResultType.SQLERROR:
+                        return StatusCode(StatusCodes.Status409Conflict);
+                    case Helper.UpdateResultType.INVALIDEARGUMENT:
+                        return StatusCode(StatusCodes.Status406NotAcceptable);
+                    default:
+                        return StatusCode(StatusCodes.Status400BadRequest);
+                }
             }
             return StatusCode(StatusCodes.Status200OK, result);
         }
         [HttpPut]
-        public IActionResult spUpdate([FromBody] Employee employee)
+        public IActionResult Update([FromBody] Employee employee)
         {
-            Employee result = EmployeeRepo.GetInstance().spInsertOrUpdate(employee);
-            if (result == null)
+            Employee result;
+            try
             {
-                return StatusCode(StatusCodes.Status400BadRequest);
+                result = EmployeeRepo.GetInstance().Update(employee);
+            }
+            catch (Helper.RepoException<Helper.UpdateResultType> ex)
+            {
+                switch (ex.Type)
+                {
+                    case Helper.UpdateResultType.SQLERROR:
+                        return StatusCode(StatusCodes.Status409Conflict);
+                    case Helper.UpdateResultType.INVALIDEARGUMENT:
+                        return StatusCode(StatusCodes.Status406NotAcceptable);
+                    default:
+                        return StatusCode(StatusCodes.Status400BadRequest);
+                }
             }
             return StatusCode(StatusCodes.Status200OK, result);
         }
         [HttpDelete]
-        public IActionResult spDelete(int Id)
+        public IActionResult Delete(int Id)
         {
-            Employee result = EmployeeRepo.GetInstance().spDelete(Id);
-            if (result == null)
+            Employee result;
+            try
             {
-                return StatusCode(StatusCodes.Status400BadRequest);
+                result = EmployeeRepo.GetInstance().Delete(Id);
+            }
+            catch (Helper.RepoException<Helper.UpdateResultType> ex)
+            {
+                switch (ex.Type)
+                {
+                    case Helper.UpdateResultType.SQLERROR:
+                        return StatusCode(StatusCodes.Status409Conflict);
+                    case Helper.UpdateResultType.INVALIDEARGUMENT:
+                        return StatusCode(StatusCodes.Status406NotAcceptable);
+                    default:
+                        return StatusCode(StatusCodes.Status400BadRequest);
+                }
             }
             return StatusCode(StatusCodes.Status200OK, result);
         }
     }
-}
-
+} 
