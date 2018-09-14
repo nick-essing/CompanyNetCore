@@ -26,7 +26,7 @@ namespace CompanyNetCore.Repositories
                 conn.Open();
                 var param = new DynamicParameters();
                 param.Add("@Id", Id);
-                var result = conn.QueryFirstOrDefault<Employee>("SELECT Id,Name,Birthdate,Salary,Gender FROM viEmpolyee where Id = @Id", param);
+                var result = conn.QueryFirstOrDefault<Employee>("SELECT Id,Name,Birthdate,Salary,Gender FROM viEmployee where Id = @Id", param);
                 return result;
             }
         }
@@ -40,7 +40,23 @@ namespace CompanyNetCore.Repositories
                 param.Add("@name", employee.Name);
                 param.Add("@birthdate", employee.Birthdate);
                 param.Add("@salary", employee.Salary);
-                param.Add("@gender", employee.Gender);
+                int? gender;
+                if (employee.Gender == "männlich")
+                {
+                    gender = 1;
+                }else if (employee.Gender == "weiblich")
+                {
+                    gender = 2;
+                }
+                else if(employee.Gender == "kompliziert")
+                {
+                    gender = 3;
+                }
+                else
+                {
+                    gender = null;
+                }
+                param.Add("@gender", gender);
                 var result = conn.QueryFirstOrDefault<Employee>("spInsertOrUpdateEmployee", param, null, null, CommandType.StoredProcedure);
                 return result;
             }
