@@ -5,7 +5,7 @@ namespace CompanyNetCore.Model
     public class Employee
     {
         public Employee(int id, string name, DateTime birthdate, decimal salary, string gender) {
-            this.Id = id;
+            this.Id = id ;
             this.Name = name;
             this.Birthdate = birthdate;
             this.Salary = salary;

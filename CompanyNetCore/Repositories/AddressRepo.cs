@@ -9,28 +9,49 @@ using System.Linq;
 namespace CompanyNetCore.Repositories
 {
     class AddressRepo
-    { 
-        public List<Model.Address> Read()
+    {
+        static AddressRepo _addressRepo;
+        public static AddressRepo GetInstance()
+        {
+            if (_addressRepo == null)
+                _addressRepo = new AddressRepo();
+            return _addressRepo;
+        }
+        private AddressRepo()
+        {
+
+        }
+        public List<Address> Read()
         {
             using (SqlConnection conn = new SqlConnection(CompanyNetCore.Properties.Resources.sqlConnectionString))
             {
                 conn.Open();
-                var result = conn.Query<Model.Address>("SELECT Id,Postcode,City,Street,Country FROM viAddress").ToList();
+                var result = conn.Query<Address>("SELECT Id,Postcode,City,Street,Country FROM viAddress").ToList();
                 return result;
             }
 
         }
-        public Model.Address Read(int Id)
+        public Address Read(int Id)
         {
             using (SqlConnection conn = new SqlConnection(CompanyNetCore.Properties.Resources.sqlConnectionString))
             {
                 var param = new DynamicParameters();
                 param.Add("@Id", Id);
-                var result = conn.QueryFirstOrDefault<Model.Address>("SELECT Id,Postcode,City,Street,Country FROM viAddress where Id = @Id", param);
+                var result = conn.QueryFirstOrDefault<Address>("SELECT Id,Postcode,City,Street,Country FROM viAddress where Id = @Id", param);
                 return result;
             }
         }
-        public Model.Address spInsertOrUpdate(Address address)
+        public Address Create(Address address)
+        {
+            var retval = InsertOrUpdate(address);
+            return retval;
+        }
+        public Address Update(Address address)
+        {
+            var retval = InsertOrUpdate(address);
+            return retval;
+        }
+        private Address InsertOrUpdate(Address address)
         {
             using (SqlConnection conn = new SqlConnection(CompanyNetCore.Properties.Resources.sqlConnectionString))
             {
@@ -40,17 +61,17 @@ namespace CompanyNetCore.Repositories
                 param.Add("@city", address.City);
                 param.Add("@street", address.Street);
                 param.Add("@country", address.Country);
-                var result = conn.QueryFirstOrDefault<Model.Address>("spInsertOrUpdateAddress", param, null, null, CommandType.StoredProcedure);
+                var result = conn.QueryFirstOrDefault<Address>("spInsertOrUpdateAddress", param, null, null, CommandType.StoredProcedure);
                 return result;
             }
         }
-        public Model.Address spDelete( int Id)
+        public Address spDelete( int Id)
         {
             using (SqlConnection conn = new SqlConnection(CompanyNetCore.Properties.Resources.sqlConnectionString))
             {
                 var param = new DynamicParameters();
                 param.Add("@Id", Id);
-                var result = conn.QueryFirstOrDefault<Model.Address>("spDeleteAddress", param, null, null, CommandType.StoredProcedure);
+                var result = conn.QueryFirstOrDefault<Address>("spDeleteAddress", param, null, null, CommandType.StoredProcedure);
                 return result;
             }
         }

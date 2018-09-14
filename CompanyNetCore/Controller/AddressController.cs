@@ -19,12 +19,10 @@ namespace CompanyNetCore.Controller
     [Route("api/Address")]
     public class AddressController : ControllerBase
     {
-        AddressRepo ar = new AddressRepo();
-
         [HttpGet]
         public IActionResult Read()
         {
-            List<Address> result = ar.Read();
+            List<Address> result = AddressRepo.GetInstance().Read();
             if (result == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest);
@@ -34,7 +32,7 @@ namespace CompanyNetCore.Controller
         [HttpGet("{Id}")]
         public IActionResult Read(int Id)
         {
-            Address result = ar.Read(Id);
+            Address result = AddressRepo.GetInstance().Read(Id);
             if (result == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest);
@@ -42,9 +40,9 @@ namespace CompanyNetCore.Controller
             return StatusCode(StatusCodes.Status200OK, result);
         }
         [HttpPost]
-        public IActionResult spInsert([FromBody] Address address)
+        public IActionResult Insert([FromBody] Address address)
         {
-            Address result = ar.spInsertOrUpdate(address);
+            Address result = AddressRepo.GetInstance().Create(address);
             if (result == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest);
@@ -52,9 +50,9 @@ namespace CompanyNetCore.Controller
             return StatusCode(StatusCodes.Status200OK, result);
         }
         [HttpPut]
-        public IActionResult spUpdate([FromBody] Address address)
+        public IActionResult Update([FromBody] Address address)
         {
-            Address result = ar.spInsertOrUpdate(address);
+            Address result = AddressRepo.GetInstance().Update(address);
             if (result == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest);
@@ -64,7 +62,7 @@ namespace CompanyNetCore.Controller
         [HttpDelete]
         public IActionResult spDelete(int Id)
         {
-            Address result = ar.spDelete(Id);
+            Address result = AddressRepo.GetInstance().spDelete(Id);
             if (result == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest);
