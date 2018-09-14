@@ -9,7 +9,18 @@ using System.Linq;
 namespace CompanyNetCore.Repositories
 {
     class AddressRepo
-    { 
+    {
+        static AddressRepo _addressRepo;
+        public static AddressRepo GetInstance()
+        {
+            if (_addressRepo == null)
+                _addressRepo = new AddressRepo();
+            return _addressRepo;
+        }
+        private AddressRepo()
+        {
+
+        }
         public List<Model.Address> Read()
         {
             using (SqlConnection conn = new SqlConnection(CompanyNetCore.Properties.Resources.sqlConnectionString))

@@ -10,6 +10,17 @@ namespace CompanyNetCore.Repositories
 {
     class EmployeeRepo
     {
+        static EmployeeRepo _employeeRepo;
+        public static EmployeeRepo GetInstance()
+        {
+            if (_employeeRepo == null)
+                _employeeRepo = new EmployeeRepo();
+            return _employeeRepo;
+        }
+        private EmployeeRepo()
+        {
+
+        }
         public List<Employee> Read()
         {
             using (SqlConnection conn = new SqlConnection(CompanyNetCore.Properties.Resources.sqlConnectionString))

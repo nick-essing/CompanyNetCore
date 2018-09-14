@@ -19,12 +19,10 @@ namespace CompanyNetCore.Controller
     [Route("api/Employee")]
     public class EmployeeController : ControllerBase
     {
-        EmployeeRepo er = new EmployeeRepo();
-
         [HttpGet]
         public IActionResult Read()
         {
-            List<Employee> result = er.Read();
+            List<Employee> result = EmployeeRepo.GetInstance().Read();
             if (result == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest);
@@ -34,7 +32,7 @@ namespace CompanyNetCore.Controller
         [HttpGet("{Id}")]
         public IActionResult Read(int Id)
         {
-            Employee result = er.Read(Id);
+            Employee result = EmployeeRepo.GetInstance().Read(Id);
             if (result == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest);
@@ -44,7 +42,7 @@ namespace CompanyNetCore.Controller
         [HttpPost]
         public IActionResult spInsert([FromBody] Employee employee)
         {
-            Employee result = er.spInsertOrUpdate(employee);
+            Employee result = EmployeeRepo.GetInstance().spInsertOrUpdate(employee);
             if (result == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest);
@@ -54,7 +52,7 @@ namespace CompanyNetCore.Controller
         [HttpPut]
         public IActionResult spUpdate([FromBody] Employee employee)
         {
-            Employee result = er.spInsertOrUpdate(employee);
+            Employee result = EmployeeRepo.GetInstance().spInsertOrUpdate(employee);
             if (result == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest);
@@ -64,7 +62,7 @@ namespace CompanyNetCore.Controller
         [HttpDelete]
         public IActionResult spDelete(int Id)
         {
-            Employee result = er.spDelete(Id);
+            Employee result = EmployeeRepo.GetInstance().spDelete(Id);
             if (result == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest);
