@@ -66,6 +66,8 @@ namespace CompanyNetCore.Controller
         [HttpPost]
         public IActionResult Create([FromBody] Address address)
         {
+            if (!Authorization.isAuthorised(Request.Headers["Authorization"].ToString().Split(' ')[1]))
+                return StatusCode(StatusCodes.Status401Unauthorized);
             Address result;
             try
             {
@@ -88,6 +90,8 @@ namespace CompanyNetCore.Controller
         [HttpPut]
         public IActionResult Update([FromBody] Address address)
         {
+            if (!Authorization.isAuthorised(Request.Headers["Authorization"].ToString().Split(' ')[1]))
+                return StatusCode(StatusCodes.Status401Unauthorized);
             Address result;
             try
             {
@@ -105,11 +109,13 @@ namespace CompanyNetCore.Controller
                         return StatusCode(StatusCodes.Status400BadRequest);
                 }
             }
-            return StatusCode(StatusCodes.Status200OK, result);
+        return StatusCode(StatusCodes.Status200OK, result);
         }
         [HttpDelete]
         public IActionResult Delete(int Id)
         {
+            if (!Authorization.isAuthorised(Request.Headers["Authorization"].ToString().Split(' ')[1]))
+                return StatusCode(StatusCodes.Status401Unauthorized);
             Address result;
             try
             {
