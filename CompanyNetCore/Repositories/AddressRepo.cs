@@ -18,21 +18,21 @@ namespace CompanyNetCore.Repositories
         }
         public List<Address> Read()
         {
-                try
+            try
+            {
+                List<Address> retVal;
+                var conn = _dbContext.GetCompany();
+                string Select = "SELECT Id,Postcode,City,Street,Country FROM viAddress;";
+                using (conn)
                 {
-                    List<Address> retVal;
-                    var conn = _dbContext.GetCompany();
-                    string Select = "SELECT Id,Postcode,City,Street,Country FROM viAddress;";
-                    using (conn)
-                    {
-                        retVal = conn.Query<Address>(Select).ToList();
-                    }
-                    return retVal;
+                    retVal = conn.Query<Address>(Select).ToList();
                 }
-                catch (Exception)
-                {
-                    throw new Helper.RepoException<ResultType>(ResultType.SQLERROR);
-                }
+                return retVal;
+            }
+            catch (Exception)
+            {
+                throw new Helper.RepoException<ResultType>(ResultType.SQLERROR);
+            }
         }
         public Address Read(int Id)
         {

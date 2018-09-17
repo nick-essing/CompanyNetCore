@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using CompanyNetCore.Interfaces;
 using CompanyNetCore.Helper;
+using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
+using Microsoft.AspNetCore.Http.Internal;
 
 namespace CompanyNetCore.Controller
 {
@@ -66,6 +68,8 @@ namespace CompanyNetCore.Controller
         [HttpPost]
         public IActionResult Create([FromBody] Employee employee)
         {
+            if (!Authorization.isAuthorised(Request.Headers["Authorization"].ToString().Split(' ')[1]))
+                return StatusCode(StatusCodes.Status401Unauthorized);
             Employee result;
             try
             {
@@ -88,6 +92,8 @@ namespace CompanyNetCore.Controller
         [HttpPut]
         public IActionResult Update([FromBody] Employee employee)
         {
+            if (!Authorization.isAuthorised(Request.Headers["Authorization"].ToString().Split(' ')[1]))
+                return StatusCode(StatusCodes.Status401Unauthorized);
             Employee result;
             try
             {
@@ -110,6 +116,8 @@ namespace CompanyNetCore.Controller
         [HttpDelete]
         public IActionResult Delete(int Id)
         {
+            if (!Authorization.isAuthorised(Request.Headers["Authorization"].ToString().Split(' ')[1]))
+                return StatusCode(StatusCodes.Status401Unauthorized);
             Employee result;
             try
             {
