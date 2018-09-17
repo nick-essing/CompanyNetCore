@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using CompanyNetCore.Model;
 
 namespace CompanyNetCore.Interfaces
 {
-    public interface IDbContext
+    public interface IEmployeeRepository
     {
-        IDbConnection GetCompany();
+        List<Employee> GetData();
     }
 }

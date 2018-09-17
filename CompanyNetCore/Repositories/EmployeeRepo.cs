@@ -5,21 +5,36 @@ using System.Collections.Generic;
 using Dapper;
 using CompanyNetCore.Model;
 using System.Linq;
+using CompanyNetCore.Interfaces;
 
 namespace CompanyNetCore.Repositories
 {
-    class EmployeeRepo
+    class EmployeeRepo : IEmployeeRepository
     {
+        IDbContext _dbContext;
         static EmployeeRepo _employeeRepo;
+        public EmployeeRepo(IDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
+        public List<Employee> GetData()
+        {
+            List<Employee> retVal;
+            var conn = _dbContext.GetCompany();
+            string Select = "SELECT Id,Name,Birthdate,Salary,Gender FROM viEmployee;";
+            using (conn)
+            {
+                retVal = conn.Query<Employee>(Select).ToList();
+            }
+
+            return retVal;
+        }
+        //-----------------------------------------------------------------------------
         public static EmployeeRepo GetInstance()
         {
             if (_employeeRepo == null)
-                _employeeRepo = new EmployeeRepo();
+                _employeeRepo = new EmployeeRepo(null);
             return _employeeRepo;
-        }
-        private EmployeeRepo()
-        {
-
         }
         public List<Employee> Read()
         {

@@ -13,19 +13,26 @@ using Microsoft.AspNetCore.Mvc;
 using System.Data.SqlClient;
 using Dapper;
 using CompanyNetCore.Repositories;
+using CompanyNetCore.Interfaces;
 
 namespace CompanyNetCore.Controller
 {
     [Route("api/Employee")]
     public class EmployeeController : ControllerBase
     {
+        private readonly IEmployeeRepository _employeeRepo;
+
+        public EmployeeController(IEmployeeRepository employeeRepo)
+        {
+            _employeeRepo = employeeRepo;
+        }
         [HttpGet]
         public IActionResult Read()
         {
             List<Employee> result;
             try
             {
-                result = EmployeeRepo.GetInstance().Read();
+                result = _employeeRepo.GetData(); // getInstance().Read()
             }
             catch (Helper.RepoException<Helper.ResultType> ex)
             {
