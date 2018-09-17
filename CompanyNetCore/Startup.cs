@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using CompanyNetCore.Model;
 using CompanyNetCore.Interfaces;
 using CompanyNetCore.Helper;
@@ -28,7 +22,8 @@ namespace CompanyNetCore
             services.Configure<DbSettings>(Configuration.GetSection("DbSettings"));
 
             services.AddSingleton<IDbContext, DbContext>();
-            services.AddScoped<IEmployeeRepository, EmployeeRepo>();
+            services.AddScoped<IRepository<Employee>, EmployeeRepo>();
+            services.AddScoped<IRepository<Address>, AddressRepo>();
         }
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {

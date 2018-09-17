@@ -1,28 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data;
+﻿using System.Collections.Generic;
 using CompanyNetCore.Model;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
-using System.Data.SqlClient;
-using Dapper;
-using CompanyNetCore.Repositories;
 using CompanyNetCore.Interfaces;
+using CompanyNetCore.Helper;
 
 namespace CompanyNetCore.Controller
 {
     [Route("api/Employee")]
     public class EmployeeController : ControllerBase
     {
-        private readonly IEmployeeRepository _employeeRepo;
+        private readonly IRepository<Employee> _employeeRepo;
 
-        public EmployeeController(IEmployeeRepository employeeRepo)
+        public EmployeeController(IRepository<Employee> employeeRepo)
         {
             _employeeRepo = employeeRepo;
         }
@@ -32,9 +22,9 @@ namespace CompanyNetCore.Controller
             List<Employee> result;
             try
             {
-                result = _employeeRepo.GetData(); // getInstance().Read()
+                result = _employeeRepo.Read();
             }
-            catch (Helper.RepoException<Helper.ResultType> ex)
+            catch (Helper.RepoException<ResultType> ex)
             {
                 switch (ex.Type)
                 {
@@ -56,9 +46,9 @@ namespace CompanyNetCore.Controller
             Employee result;
             try
             {
-                result = EmployeeRepo.GetInstance().Read(Id);
+                result = _employeeRepo.Read(Id);
             }
-            catch (Helper.RepoException<Helper.ResultType> ex)
+            catch (Helper.RepoException<ResultType> ex)
             {
                 switch (ex.Type)
                 {
@@ -79,9 +69,9 @@ namespace CompanyNetCore.Controller
             Employee result;
             try
             {
-                result = EmployeeRepo.GetInstance().Create(employee);
+                result = _employeeRepo.Create(employee);
             }
-            catch (Helper.RepoException<Helper.ResultType> ex)
+            catch (Helper.RepoException<ResultType> ex)
             {
                 switch (ex.Type)
                 {
@@ -101,9 +91,9 @@ namespace CompanyNetCore.Controller
             Employee result;
             try
             {
-                result = EmployeeRepo.GetInstance().Update(employee);
+                result = _employeeRepo.Update(employee);
             }
-            catch (Helper.RepoException<Helper.ResultType> ex)
+            catch (Helper.RepoException<ResultType> ex)
             {
                 switch (ex.Type)
                 {
@@ -123,9 +113,9 @@ namespace CompanyNetCore.Controller
             Employee result;
             try
             {
-                result = EmployeeRepo.GetInstance().Delete(Id);
+                result = _employeeRepo.Delete(Id);
             }
-            catch (Helper.RepoException<Helper.ResultType> ex)
+            catch (Helper.RepoException<ResultType> ex)
             {
                 switch (ex.Type)
                 {
