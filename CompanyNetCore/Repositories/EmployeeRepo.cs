@@ -1,86 +1,85 @@
 ﻿using System;
 using System.Data;
-using System.Data.SqlClient;
 using System.Collections.Generic;
 using Dapper;
 using CompanyNetCore.Model;
 using System.Linq;
+using CompanyNetCore.Interfaces;
+using CompanyNetCore.Helper;
 
 namespace CompanyNetCore.Repositories
 {
-    class EmployeeRepo
+    class EmployeeRepo : IRepository<Employee>
     {
-        static EmployeeRepo _employeeRepo;
-        public static EmployeeRepo GetInstance()
+        IDbContext _dbContext;
+        public EmployeeRepo(IDbContext dbContext)
         {
-            if (_employeeRepo == null)
-                _employeeRepo = new EmployeeRepo();
-            return _employeeRepo;
-        }
-        private EmployeeRepo()
-        {
-
+            _dbContext = dbContext;
         }
         public List<Employee> Read()
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(CompanyNetCore.Properties.Resources.sqlConnectionString))
+                List<Employee> retVal;
+                var conn = _dbContext.GetCompany();
+                string Select = "SELECT Id,Name,Birthdate,Salary,Gender FROM viEmployee;";
+                using (conn)
                 {
-
-                    conn.Open();
-                    var result = conn.Query<Employee>("SELECT Id,Name,Birthdate,Salary,Gender FROM viEmployee").ToList();
-                    return result;
+                    retVal = conn.Query<Employee>(Select).ToList();
                 }
+                return retVal;
             }
             catch (Exception)
             {
-                throw new Helper.RepoException<Helper.UpdateResultType>(Helper.UpdateResultType.SQLERROR);
+                throw new Helper.RepoException<ResultType>(ResultType.SQLERROR);
             }
         }
         public Employee Read(int Id)
         {
             try
             { 
-                using (SqlConnection conn = new SqlConnection(CompanyNetCore.Properties.Resources.sqlConnectionString))
+                Employee retVal;
+                var conn = _dbContext.GetCompany();
+                string Select = "SELECT Id,Name,Birthdate,Salary,Gender FROM viEmployee WHERE Id = @Id;";
+                using (conn)
                 {
-                    conn.Open();
                     var param = new DynamicParameters();
                     param.Add("@Id", Id);
-                    var result = conn.QueryFirstOrDefault<Employee>("SELECT Id,Name,Birthdate,Salary,Gender FROM viEmployee where Id = @Id", param);
-                    return result;
+                    retVal = conn.QueryFirstOrDefault<Employee>(Select,param);
                 }
+                return retVal;
             }
             catch (Exception)
             {
-                throw new Helper.RepoException<Helper.UpdateResultType>(Helper.UpdateResultType.SQLERROR);
+                throw new Helper.RepoException<ResultType>(ResultType.SQLERROR);
             }
         }
-        public Employee Create(Employee employee)
+        public Employee Create(Employee elm)
         {
-            if (employee.Id != 0)
+            if (elm.Id != 0)
             {
-                throw new Helper.RepoException<Helper.UpdateResultType>(Helper.UpdateResultType.INVALIDEARGUMENT);
+                throw new Helper.RepoException<ResultType>(ResultType.INVALIDEARGUMENT);
             }
-            var retval = InsertOrUpdate(employee);
+            var retval = InsertOrUpdate(elm);
             return retval;
         }
-        public Employee Update(Employee employee)
+        public Employee Update(Employee elm)
         {
-            if (employee.Id == 0)
+            if (elm.Id == 0 || Read(elm.Id) == null)
             {
-                throw new Helper.RepoException<Helper.UpdateResultType>(Helper.UpdateResultType.INVALIDEARGUMENT);
+                throw new Helper.RepoException<ResultType>(ResultType.INVALIDEARGUMENT);
             }
-            var retval = InsertOrUpdate(employee);
+            var retval = InsertOrUpdate(elm);
             return retval;
         }
         private Employee InsertOrUpdate(Employee employee)
         {
             try
-            { 
-                using (SqlConnection conn = new SqlConnection(CompanyNetCore.Properties.Resources.sqlConnectionString))
+            {
+                Employee retVal;
+                var conn = _dbContext.GetCompany();
+                using (conn)
                 {
-                    conn.Open();
                     var param = new DynamicParameters();
                     param.Add("@Id", employee.Id);
                     param.Add("@name", employee.Name);
@@ -90,11 +89,12 @@ namespace CompanyNetCore.Repositories
                     if (employee.Gender == "männlich")
                     {
                         gender = 1;
-                    }else if (employee.Gender == "weiblich")
+                    }
+                    else if (employee.Gender == "weiblich")
                     {
                         gender = 2;
                     }
-                    else if(employee.Gender == "kompliziert")
+                    else if (employee.Gender == "kompliziert")
                     {
                         gender = 3;
                     }
@@ -103,38 +103,32 @@ namespace CompanyNetCore.Repositories
                         gender = null;
                     }
                     param.Add("@gender", gender);
-                    var result = conn.QueryFirstOrDefault<Employee>("spInsertOrUpdateEmployee", param, null, null, CommandType.StoredProcedure);
-                    if (result == null)
-                    {
-                        throw new Helper.RepoException<Helper.UpdateResultType>(Helper.UpdateResultType.INVALIDEARGUMENT);
-                    }
-                    return result;
+                    retVal = conn.QueryFirstOrDefault<Employee>("spInsertOrUpdateEmployee", param, null, null, CommandType.StoredProcedure);
                 }
+                return retVal;
             }
             catch (Exception)
             {
-                throw new Helper.RepoException<Helper.UpdateResultType>(Helper.UpdateResultType.SQLERROR);
+                throw new Helper.RepoException<ResultType>(ResultType.SQLERROR);
             }
         }
         public Employee Delete(int Id)
         {
             try
-            { 
-                using (SqlConnection conn = new SqlConnection(CompanyNetCore.Properties.Resources.sqlConnectionString))
+            {
+                Employee retVal;
+                var conn = _dbContext.GetCompany();
+                using (conn)
                 {
                     var param = new DynamicParameters();
                     param.Add("@Id", Id);
-                    var result = conn.QueryFirstOrDefault<Employee>("spDeleteEmployee", param, null, null, CommandType.StoredProcedure);
-                    if (result == null)
-                    {
-                        throw new Helper.RepoException<Helper.UpdateResultType>(Helper.UpdateResultType.INVALIDEARGUMENT);
-                    }
-                    return result;
+                    retVal = conn.QueryFirstOrDefault<Employee>("spDeleteEmployee", param, null, null, CommandType.StoredProcedure);
                 }
+                return retVal;
             }
             catch (Exception)
             {
-                throw new Helper.RepoException<Helper.UpdateResultType>(Helper.UpdateResultType.SQLERROR);
+                throw new Helper.RepoException<ResultType>(ResultType.SQLERROR);
             }
         }
     }

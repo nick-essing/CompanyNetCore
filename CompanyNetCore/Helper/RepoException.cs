@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CompanyNetCore.Helper
 {
@@ -22,7 +19,7 @@ namespace CompanyNetCore.Helper
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
-    public enum UpdateResultType
+    public enum ResultType
     {
         SQLERROR,
         INVALIDEARGUMENT,

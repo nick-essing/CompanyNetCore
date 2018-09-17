@@ -1,71 +1,131 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data;
+﻿using System.Collections.Generic;
 using CompanyNetCore.Model;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
-using System.Data.SqlClient;
-using Dapper;
-using CompanyNetCore.Repositories;
+using CompanyNetCore.Interfaces;
+using CompanyNetCore.Helper;
 
 namespace CompanyNetCore.Controller
 {
     [Route("api/Address")]
     public class AddressController : ControllerBase
     {
+        private readonly IRepository<Address> _addressRepo;
+
+        public AddressController(IRepository<Address> addressRepo)
+        {
+            _addressRepo = addressRepo;
+        }
         [HttpGet]
         public IActionResult Read()
         {
-            List<Address> result = AddressRepo.GetInstance().Read();
+            List<Address> result;
+            try
+            {
+                result = _addressRepo.Read();
+            }
+            catch (Helper.RepoException<ResultType> ex)
+            {
+                switch (ex.Type)
+                {
+                    case Helper.ResultType.SQLERROR:
+                        return StatusCode(StatusCodes.Status409Conflict);
+                    default:
+                        return StatusCode(StatusCodes.Status400BadRequest);
+                }
+            }
             if (result == null)
             {
-                return StatusCode(StatusCodes.Status400BadRequest);
+                return StatusCode(StatusCodes.Status204NoContent);
             }
             return StatusCode(StatusCodes.Status200OK, result);
         }
         [HttpGet("{Id}")]
         public IActionResult Read(int Id)
         {
-            Address result = AddressRepo.GetInstance().Read(Id);
-            if (result == null)
+            Address result;
+            try
             {
-                return StatusCode(StatusCodes.Status400BadRequest);
+                result = _addressRepo.Read(Id);
             }
+            catch (Helper.RepoException<ResultType> ex)
+            {
+                switch (ex.Type)
+                {
+                    case Helper.ResultType.SQLERROR:
+                        return StatusCode(StatusCodes.Status409Conflict);
+                    default:
+                        return StatusCode(StatusCodes.Status400BadRequest);
+                }
+            }
+            if (result == null)
+                return StatusCode(StatusCodes.Status204NoContent);
             return StatusCode(StatusCodes.Status200OK, result);
+
         }
         [HttpPost]
-        public IActionResult Insert([FromBody] Address address)
+        public IActionResult Create([FromBody] Address address)
         {
-            Address result = AddressRepo.GetInstance().Create(address);
-            if (result == null)
+            Address result;
+            try
             {
-                return StatusCode(StatusCodes.Status400BadRequest);
+                result = _addressRepo.Create(address);
+            }
+            catch (Helper.RepoException<ResultType> ex)
+            {
+                switch (ex.Type)
+                {
+                    case Helper.ResultType.SQLERROR:
+                        return StatusCode(StatusCodes.Status409Conflict);
+                    case Helper.ResultType.INVALIDEARGUMENT:
+                        return StatusCode(StatusCodes.Status406NotAcceptable);
+                    default:
+                        return StatusCode(StatusCodes.Status400BadRequest);
+                }
             }
             return StatusCode(StatusCodes.Status200OK, result);
         }
         [HttpPut]
         public IActionResult Update([FromBody] Address address)
         {
-            Address result = AddressRepo.GetInstance().Update(address);
-            if (result == null)
+            Address result;
+            try
             {
-                return StatusCode(StatusCodes.Status400BadRequest);
+                result = _addressRepo.Update(address);
+            }
+            catch (Helper.RepoException<Helper.ResultType> ex)
+            {
+                switch (ex.Type)
+                {
+                    case Helper.ResultType.SQLERROR:
+                        return StatusCode(StatusCodes.Status409Conflict);
+                    case Helper.ResultType.INVALIDEARGUMENT:
+                        return StatusCode(StatusCodes.Status406NotAcceptable);
+                    default:
+                        return StatusCode(StatusCodes.Status400BadRequest);
+                }
             }
             return StatusCode(StatusCodes.Status200OK, result);
         }
         [HttpDelete]
-        public IActionResult spDelete(int Id)
+        public IActionResult Delete(int Id)
         {
-            Address result = AddressRepo.GetInstance().spDelete(Id);
-            if (result == null)
+            Address result;
+            try
             {
-                return StatusCode(StatusCodes.Status400BadRequest);
+                result = _addressRepo.Delete(Id);
+            }
+            catch (Helper.RepoException<ResultType> ex)
+            {
+                switch (ex.Type)
+                {
+                    case Helper.ResultType.SQLERROR:
+                        return StatusCode(StatusCodes.Status409Conflict);
+                    case Helper.ResultType.INVALIDEARGUMENT:
+                        return StatusCode(StatusCodes.Status406NotAcceptable);
+                    default:
+                        return StatusCode(StatusCodes.Status400BadRequest);
+                }
             }
             return StatusCode(StatusCodes.Status200OK, result);
         }
