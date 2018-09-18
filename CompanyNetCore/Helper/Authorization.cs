@@ -11,6 +11,10 @@ namespace CompanyNetCore.Helper
         {
             try
             {
+                if (Token.Length % 4 == 3)
+                    Token += "=";
+                if (Token.Length % 3 == 2)
+                    Token += "==";
                 var a = System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(Token.Split('.')[1]));
                 var data = (JObject)JsonConvert.DeserializeObject(a);
                 var asda = data.SelectToken("IsAdmin").ToString();
