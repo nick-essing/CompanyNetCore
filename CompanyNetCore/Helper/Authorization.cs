@@ -1,20 +1,31 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 
 namespace CompanyNetCore.Helper
 {
     public static class Authorization
     {
-        private static string[] adminUsername = {"Nick", "Admin2" };
-        private static string[] adminPw = {"12345", "admin" };
-        public static bool isAuthorised(String base64EncodedData)
+        public static bool isAuthorised(String Token)
         {
-            var a = System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(base64EncodedData));
-            for (int i = 0; i < adminUsername.Length; i++)
+            try
             {
-                if (a.Split(':')[0] == adminUsername[i] && a.Split(':')[1] == adminPw[i])
+                if (Token.Length % 4 == 3)
+                    Token += "=";
+                if (Token.Length % 3 == 2)
+                    Token += "==";
+                var a = System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(Token.Split('.')[1]));
+                var data = (JObject)JsonConvert.DeserializeObject(a);
+                var asda = data.SelectToken("IsAdmin").ToString();
+                if (data.SelectToken("IsAdmin").ToString() == "True")
                     return true;
+                return false;
             }
-            return false;
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

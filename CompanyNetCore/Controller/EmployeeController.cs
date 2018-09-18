@@ -68,7 +68,7 @@ namespace CompanyNetCore.Controller
         [HttpPost]
         public IActionResult Create([FromBody] Employee employee)
         {
-            if (!Authorization.isAuthorised(Request.Headers["Authorization"].ToString().Split(' ')[1]))
+            if (!Authorization.isAuthorised(Request.Headers["Authorization"].ToString()))
                 return StatusCode(StatusCodes.Status401Unauthorized);
             Employee result;
             try
@@ -92,7 +92,7 @@ namespace CompanyNetCore.Controller
         [HttpPut]
         public IActionResult Update([FromBody] Employee employee)
         {
-            if (!Authorization.isAuthorised(Request.Headers["Authorization"].ToString().Split(' ')[1]))
+            if (!Authorization.isAuthorised(Request.Headers["Authorization"].ToString()))
                 return StatusCode(StatusCodes.Status401Unauthorized);
             Employee result;
             try
@@ -116,7 +116,7 @@ namespace CompanyNetCore.Controller
         [HttpDelete]
         public IActionResult Delete(int Id)
         {
-            if (!Authorization.isAuthorised(Request.Headers["Authorization"].ToString().Split(' ')[1]))
+            if (!Authorization.isAuthorised(Request.Headers["Authorization"].ToString()))
                 return StatusCode(StatusCodes.Status401Unauthorized);
             Employee result;
             try
