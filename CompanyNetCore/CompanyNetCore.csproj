@@ -12,6 +12,9 @@
     <PackageReference Include="Dapper" Version="1.50.5" />
     <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.2.6" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="TobitLogger.Logstash" Version="4.1.0" />
+    <PackageReference Include="TobitLogger.Middleware" Version="4.1.0" />
+    <PackageReference Include="TobitWebApiExtensionsCore" Version="2.0.18" />
   </ItemGroup>
 
   <ItemGroup>

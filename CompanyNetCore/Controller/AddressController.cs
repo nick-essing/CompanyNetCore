@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using CompanyNetCore.Interfaces;
 using CompanyNetCore.Helper;
+using TobitLogger.Core.Models;
+using System;
 
 namespace CompanyNetCore.Controller
 {
@@ -75,6 +77,12 @@ namespace CompanyNetCore.Controller
             }
             catch (Helper.RepoException<ResultType> ex)
             {
+
+                var logObj = new ExceptionData(ex);
+                logObj.CustomText = "Insert";
+                logObj.Add("start_time", DateTime.UtcNow);
+
+                logObj.Add("Address", address);
                 switch (ex.Type)
                 {
                     case Helper.ResultType.SQLERROR:
@@ -99,6 +107,12 @@ namespace CompanyNetCore.Controller
             }
             catch (Helper.RepoException<Helper.ResultType> ex)
             {
+                var logObj = new ExceptionData(ex);
+                logObj.CustomNumber = address.Id;
+                logObj.CustomText = "Update";
+                logObj.Add("start_time", DateTime.UtcNow);
+
+                logObj.Add("Address", address);
                 switch (ex.Type)
                 {
                     case Helper.ResultType.SQLERROR:
@@ -123,6 +137,12 @@ namespace CompanyNetCore.Controller
             }
             catch (Helper.RepoException<ResultType> ex)
             {
+                var logObj = new ExceptionData(ex);
+                logObj.CustomNumber = Id;
+                logObj.CustomText = "Delete";
+                logObj.Add("start_time", DateTime.UtcNow);
+
+                logObj.Add("Id", Id);
                 switch (ex.Type)
                 {
                     case Helper.ResultType.SQLERROR:
