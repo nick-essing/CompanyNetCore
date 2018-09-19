@@ -13,12 +13,11 @@ namespace CompanyNetCore.Helper
             {
                 if (Token.Length % 4 == 3)
                     Token += "=";
-                if (Token.Length % 3 == 2)
+                if (Token.Length % 4 == 2)
                     Token += "==";
                 var a = System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(Token.Split('.')[1]));
                 var data = (JObject)JsonConvert.DeserializeObject(a);
-                var asda = data.SelectToken("IsAdmin").ToString();
-                if (data.SelectToken("IsAdmin").ToString() == "True")
+                if (data.Value<Boolean>("IsAdmin"))
                     return true;
                 return false;
             }

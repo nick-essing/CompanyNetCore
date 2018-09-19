@@ -6,17 +6,23 @@ using CompanyNetCore.Interfaces;
 using CompanyNetCore.Helper;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.AspNetCore.Http.Internal;
+using TobitLogger.Core.Models;
+using System;
+using Microsoft.Extensions.Logging;
+using TobitLogger.Core;
 
 namespace CompanyNetCore.Controller
 {
     [Route("api/Employee")]
     public class EmployeeController : ControllerBase
     {
+        private readonly ILogger<EmployeeController> _logger;
         private readonly IRepository<Employee> _employeeRepo;
 
-        public EmployeeController(IRepository<Employee> employeeRepo)
+        public EmployeeController(IRepository<Employee> employeeRepo, ILoggerFactory loggerFactory)
         {
             _employeeRepo = employeeRepo;
+            _logger = loggerFactory.CreateLogger<EmployeeController>();
         }
         [HttpGet]
         public IActionResult Read()
@@ -77,6 +83,11 @@ namespace CompanyNetCore.Controller
             }
             catch (Helper.RepoException<ResultType> ex)
             {
+                var logObj = new ExceptionData(ex);
+                logObj.CustomText = "Insert";
+                logObj.Add("start_time", DateTime.UtcNow);
+
+                logObj.Add("Employee", employee);
                 switch (ex.Type)
                 {
                     case Helper.ResultType.SQLERROR:
@@ -101,6 +112,12 @@ namespace CompanyNetCore.Controller
             }
             catch (Helper.RepoException<ResultType> ex)
             {
+                var logObj = new ExceptionData(ex);
+                logObj.CustomNumber = employee.Id;
+                logObj.CustomText = "Update";
+                logObj.Add("start_time", DateTime.UtcNow);
+
+                logObj.Add("Employee", employee);
                 switch (ex.Type)
                 {
                     case Helper.ResultType.SQLERROR:
@@ -123,8 +140,15 @@ namespace CompanyNetCore.Controller
             {
                 result = _employeeRepo.Delete(Id);
             }
-            catch (Helper.RepoException<ResultType> ex)
+            catch (RepoException<ResultType> ex)
             {
+                var logObj = new ExceptionData(ex);
+                logObj.CustomNumber = Id;
+                logObj.CustomText = "Delete";
+                logObj.Add("start_time", DateTime.UtcNow);
+
+                logObj.Add("Id", Id);
+                _logger.Error(logObj);
                 switch (ex.Type)
                 {
                     case Helper.ResultType.SQLERROR:
