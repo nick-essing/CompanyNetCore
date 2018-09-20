@@ -10,6 +10,8 @@ using TobitLogger.Core.Models;
 using System;
 using Microsoft.Extensions.Logging;
 using TobitLogger.Core;
+using Microsoft.AspNetCore.Authorization;
+using TobitWebApiExtensions.Extensions;
 
 namespace CompanyNetCore.Controller
 {
@@ -71,95 +73,121 @@ namespace CompanyNetCore.Controller
             return StatusCode(StatusCodes.Status200OK, result);
 
         }
+        [Authorize(Roles = "1")]
         [HttpPost]
         public IActionResult Create([FromBody] Employee employee)
         {
-            if (!Authorization.isAuthorised(Request.Headers["Authorization"].ToString()))
-                return StatusCode(StatusCodes.Status401Unauthorized);
-            Employee result;
-            try
+            var _user = HttpContext.GetTokenPayload<Auth.Models.LocationUserTokenPayload>();
+            var groups = HttpContext.GetUacGroups();
+            if (_user.SiteId == "77890-29730")
             {
-                result = _employeeRepo.Create(employee);
-            }
-            catch (Helper.RepoException<ResultType> ex)
-            {
-                var logObj = new ExceptionData(ex);
-                logObj.CustomText = "Insert";
-                logObj.Add("start_time", DateTime.UtcNow);
-
-                logObj.Add("Employee", employee);
-                switch (ex.Type)
+                Employee result;
+                try
                 {
-                    case Helper.ResultType.SQLERROR:
-                        return StatusCode(StatusCodes.Status409Conflict);
-                    case Helper.ResultType.INVALIDEARGUMENT:
-                        return StatusCode(StatusCodes.Status406NotAcceptable);
-                    default:
-                        return StatusCode(StatusCodes.Status400BadRequest);
+                    result = _employeeRepo.Create(employee);
                 }
+                catch (Helper.RepoException<ResultType> ex)
+                {
+                    var logObj = new ExceptionData(ex);
+                    logObj.CustomText = "Insert";
+                    logObj.Add("start_time", DateTime.UtcNow);
+
+                    logObj.Add("Employee", employee);
+                    switch (ex.Type)
+                    {
+                        case Helper.ResultType.SQLERROR:
+                            return StatusCode(StatusCodes.Status409Conflict);
+                        case Helper.ResultType.INVALIDEARGUMENT:
+                            return StatusCode(StatusCodes.Status406NotAcceptable);
+                        default:
+                            return StatusCode(StatusCodes.Status400BadRequest);
+                    }
+                }
+                return StatusCode(StatusCodes.Status200OK, result);
             }
-            return StatusCode(StatusCodes.Status200OK, result);
+            else
+            {
+                return StatusCode(StatusCodes.Status401Unauthorized);
+            }
         }
+        [Authorize(Roles = "1")]
         [HttpPut]
         public IActionResult Update([FromBody] Employee employee)
         {
-            if (!Authorization.isAuthorised(Request.Headers["Authorization"].ToString()))
-                return StatusCode(StatusCodes.Status401Unauthorized);
-            Employee result;
-            try
-            {
-                result = _employeeRepo.Update(employee);
-            }
-            catch (Helper.RepoException<ResultType> ex)
-            {
-                var logObj = new ExceptionData(ex);
-                logObj.CustomNumber = employee.Id;
-                logObj.CustomText = "Update";
-                logObj.Add("start_time", DateTime.UtcNow);
+            var _user = HttpContext.GetTokenPayload<Auth.Models.LocationUserTokenPayload>();
+            var groups = HttpContext.GetUacGroups();
 
-                logObj.Add("Employee", employee);
-                switch (ex.Type)
+            if (_user.SiteId == "77890-29730")
+            {
+                Employee result;
+                try
                 {
-                    case Helper.ResultType.SQLERROR:
-                        return StatusCode(StatusCodes.Status409Conflict);
-                    case Helper.ResultType.INVALIDEARGUMENT:
-                        return StatusCode(StatusCodes.Status406NotAcceptable);
-                    default:
-                        return StatusCode(StatusCodes.Status400BadRequest);
+                    result = _employeeRepo.Update(employee);
                 }
+                catch (Helper.RepoException<ResultType> ex)
+                {
+                    var logObj = new ExceptionData(ex);
+                    logObj.CustomNumber = employee.Id;
+                    logObj.CustomText = "Update";
+                    logObj.Add("start_time", DateTime.UtcNow);
+
+                    logObj.Add("Employee", employee);
+                    switch (ex.Type)
+                    {
+                        case Helper.ResultType.SQLERROR:
+                            return StatusCode(StatusCodes.Status409Conflict);
+                        case Helper.ResultType.INVALIDEARGUMENT:
+                            return StatusCode(StatusCodes.Status406NotAcceptable);
+                        default:
+                            return StatusCode(StatusCodes.Status400BadRequest);
+                    }
+                }
+                return StatusCode(StatusCodes.Status200OK, result);
             }
-            return StatusCode(StatusCodes.Status200OK, result);
+            else
+            {
+                return StatusCode(StatusCodes.Status401Unauthorized);
+            }
+
         }
+        [Authorize(Roles = "1")]
         [HttpDelete]
         public IActionResult Delete(int Id)
         {
-            if (!Authorization.isAuthorised(Request.Headers["Authorization"].ToString()))
-                return StatusCode(StatusCodes.Status401Unauthorized);
-            Employee result;
-            try
+            var _user = HttpContext.GetTokenPayload<Auth.Models.LocationUserTokenPayload>();
+            var groups = HttpContext.GetUacGroups();
+            if (_user.SiteId == "77890-29730")
             {
-                result = _employeeRepo.Delete(Id);
-            }
-            catch (RepoException<ResultType> ex)
-            {
-                var logObj = new ExceptionData(ex);
-                logObj.CustomNumber = Id;
-                logObj.CustomText = "Delete";
-                logObj.Add("start_time", DateTime.UtcNow);
-
-                logObj.Add("Id", Id);
-                _logger.Error(logObj);
-                switch (ex.Type)
+                Employee result;
+                try
                 {
-                    case Helper.ResultType.SQLERROR:
-                        return StatusCode(StatusCodes.Status409Conflict);
-                    case Helper.ResultType.INVALIDEARGUMENT:
-                        return StatusCode(StatusCodes.Status406NotAcceptable);
-                    default:
-                        return StatusCode(StatusCodes.Status400BadRequest);
+                    result = _employeeRepo.Delete(Id);
                 }
+                catch (RepoException<ResultType> ex)
+                {
+                    var logObj = new ExceptionData(ex);
+                    logObj.CustomNumber = Id;
+                    logObj.CustomText = "Delete";
+                    logObj.Add("start_time", DateTime.UtcNow);
+
+                    logObj.Add("Id", Id);
+                    _logger.Error(logObj);
+                    switch (ex.Type)
+                    {
+                        case Helper.ResultType.SQLERROR:
+                            return StatusCode(StatusCodes.Status409Conflict);
+                        case Helper.ResultType.INVALIDEARGUMENT:
+                            return StatusCode(StatusCodes.Status406NotAcceptable);
+                        default:
+                            return StatusCode(StatusCodes.Status400BadRequest);
+                    }
+                }
+                return StatusCode(StatusCodes.Status200OK, result);
             }
-            return StatusCode(StatusCodes.Status200OK, result);
+            else
+            {
+                return StatusCode(StatusCodes.Status401Unauthorized);
+            }
         }
     }
-} 
+}
