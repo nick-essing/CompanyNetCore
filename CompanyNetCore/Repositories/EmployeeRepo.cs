@@ -12,9 +12,11 @@ namespace CompanyNetCore.Repositories
     class EmployeeRepo : IRepository<Employee>
     {
         IDbContext _dbContext;
-        public EmployeeRepo(IDbContext dbContext)
+        IMessageHelper _messageHelper;
+        public EmployeeRepo(IDbContext dbContext, IMessageHelper messageHelper)
         {
             _dbContext = dbContext;
+            _messageHelper = messageHelper;
         }
         public List<Employee> Read()
         {
@@ -31,7 +33,7 @@ namespace CompanyNetCore.Repositories
             }
             catch (Exception)
             {
-                throw new Helper.RepoException<ResultType>(ResultType.SQLERROR);
+                throw new RepoException<ResultType>(ResultType.SQLERROR);
             }
         }
         public Employee Read(int Id)
@@ -51,26 +53,28 @@ namespace CompanyNetCore.Repositories
             }
             catch (Exception)
             {
-                throw new Helper.RepoException<ResultType>(ResultType.SQLERROR);
+                throw new RepoException<ResultType>(ResultType.SQLERROR);
             }
         }
         public Employee Create(Employee elm)
         {
             if (elm.Id != 0)
             {
-                throw new Helper.RepoException<ResultType>(ResultType.INVALIDEARGUMENT);
+                throw new RepoException<ResultType>(ResultType.INVALIDEARGUMENT);
             }
-            var retval = InsertOrUpdate(elm);
-            return retval;
+            var retVal = InsertOrUpdate(elm);
+            _messageHelper.SendIntercom($"Mitarbeiter Hinzugefügt: {retVal.Name}");
+            return retVal;
         }
         public Employee Update(Employee elm)
         {
             if (elm.Id == 0 || Read(elm.Id) == null)
             {
-                throw new Helper.RepoException<ResultType>(ResultType.INVALIDEARGUMENT);
+                throw new RepoException<ResultType>(ResultType.INVALIDEARGUMENT);
             }
-            var retval = InsertOrUpdate(elm);
-            return retval;
+            var retVal = InsertOrUpdate(elm);
+            _messageHelper.SendIntercom($"Mitarbeiter Geändert: {retVal.Name}");
+            return retVal;
         }
         private Employee InsertOrUpdate(Employee employee)
         {
@@ -109,7 +113,7 @@ namespace CompanyNetCore.Repositories
             }
             catch (Exception)
             {
-                throw new Helper.RepoException<ResultType>(ResultType.SQLERROR);
+                throw new RepoException<ResultType>(ResultType.SQLERROR);
             }
         }
         public Employee Delete(int Id)
@@ -124,11 +128,12 @@ namespace CompanyNetCore.Repositories
                     param.Add("@Id", Id);
                     retVal = conn.QueryFirstOrDefault<Employee>("spDeleteEmployee", param, null, null, CommandType.StoredProcedure);
                 }
+                _messageHelper.SendIntercom($"Mitarbeiter Gelöscht: {retVal.Name}");
                 return retVal;
             }
             catch (Exception)
             {
-                throw new Helper.RepoException<ResultType>(ResultType.SQLERROR);
+                throw new RepoException<ResultType>(ResultType.SQLERROR);
             }
         }
     }

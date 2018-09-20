@@ -31,7 +31,9 @@ namespace CompanyNetCore
             services.AddChaynsToken();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.Configure<DbSettings>(Configuration.GetSection("DbSettings"));
+            services.Configure<ChaynsApiInfo>(Configuration.GetSection("ChaynsBackendApi"));
             services.AddSingleton<IDbContext, DbContext>();
+            services.AddScoped<IMessageHelper, MessageHelper>();
             services.AddScoped<IRepository<Employee>, EmployeeRepo>();
             services.AddScoped<IRepository<Address>, AddressRepo>();
         }

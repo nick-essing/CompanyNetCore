@@ -12,9 +12,11 @@ namespace CompanyNetCore.Repositories
     class AddressRepo : IRepository<Address>
     {
         IDbContext _dbContext;
-        public AddressRepo(IDbContext dbContext)
+        IMessageHelper _messageHelper;
+            public AddressRepo(IDbContext dbContext, IMessageHelper messageHelper)
         {
             _dbContext = dbContext;
+            _messageHelper = messageHelper;
         }
         public List<Address> Read()
         {
@@ -31,7 +33,7 @@ namespace CompanyNetCore.Repositories
             }
             catch (Exception)
             {
-                throw new Helper.RepoException<ResultType>(ResultType.SQLERROR);
+                throw new RepoException<ResultType>(ResultType.SQLERROR);
             }
         }
         public Address Read(int Id)
@@ -51,26 +53,28 @@ namespace CompanyNetCore.Repositories
             }
             catch (Exception)
             {
-                throw new Helper.RepoException<ResultType>(ResultType.SQLERROR);
+                throw new RepoException<ResultType>(ResultType.SQLERROR);
             }
         }
         public Address Create(Address elm)
         {
             if (elm.Id != 0)
             {
-                throw new Helper.RepoException<ResultType>(ResultType.INVALIDEARGUMENT);
+                throw new RepoException<ResultType>(ResultType.INVALIDEARGUMENT);
             }
-            var retval = InsertOrUpdate(elm);
-            return retval;
+            var retVal = InsertOrUpdate(elm);
+            _messageHelper.SendIntercom($"Addresse Hinzugefügt: {retVal.City}, {retVal.Street}");
+            return retVal;
         }
         public Address Update(Address elm)
         {
             if (elm.Id == 0 || Read(elm.Id) == null)
             {
-                throw new Helper.RepoException<ResultType>(ResultType.INVALIDEARGUMENT);
+                throw new RepoException<ResultType>(ResultType.INVALIDEARGUMENT);
             }
-            var retval = InsertOrUpdate(elm);
-            return retval;
+            var retVal = InsertOrUpdate(elm);
+            _messageHelper.SendIntercom($"Addresse Geändert: {retVal.City}, {retVal.Street}");
+            return retVal;
         }
         private Address InsertOrUpdate(Address address)
         {
@@ -92,7 +96,7 @@ namespace CompanyNetCore.Repositories
             }
             catch (Exception)
             {
-                throw new Helper.RepoException<ResultType>(ResultType.SQLERROR);
+                throw new RepoException<ResultType>(ResultType.SQLERROR);
             }
         }
         public Address Delete(int Id)
@@ -107,11 +111,12 @@ namespace CompanyNetCore.Repositories
                     param.Add("@Id", Id);
                     retVal = conn.QueryFirstOrDefault<Address>("spDeleteAddress", param, null, null, CommandType.StoredProcedure);
                 }
+                _messageHelper.SendIntercom($"Addresse Gelöscht: {retVal.City}, {retVal.Street}");
                 return retVal;
             }
             catch (Exception)
             {
-                throw new Helper.RepoException<ResultType>(ResultType.SQLERROR);
+                throw new RepoException<ResultType>(ResultType.SQLERROR);
             }
         }
     }
